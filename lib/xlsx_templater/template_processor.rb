@@ -19,6 +19,12 @@ module XlsxTemplater
       document = Zip::File.open(template_path)
                    .select { |entry| entry.name == SHARED_STRINGS_XML }
                    .first
+                  
+      unless document
+        raise ::XlsxTemplater::InvalidInputError, "There is no entry matching to #{SHARED_STRINGS_XML}"
+      end
+                   
+      document = document
                    .get_input_stream
                    .read
       document.force_encoding(Encoding::UTF_8) if document.respond_to?(:force_encoding)
