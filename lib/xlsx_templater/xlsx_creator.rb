@@ -12,7 +12,7 @@ module XlsxTemplater
     end
 
     def generate_xlsx_file(file_name = "output_#{Time.now.strftime('%Y-%m-%d_%H%M')}.xlsx")
-      File.open(file_name, 'w') do |f|
+      File.open(file_name, 'wb') do |f|
         f.write(generate_xlsx_bytes.string)
       end
     end
