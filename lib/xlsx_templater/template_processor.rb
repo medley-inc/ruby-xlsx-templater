@@ -11,6 +11,7 @@ module XlsxTemplater
       document.force_encoding(Encoding::UTF_8) if document.respond_to?(:force_encoding)
       data.each do |key, value|
         document.gsub!("$#{key.to_s.upcase}$", safe(value))
+        document.gsub!("{{#{key.to_s.upcase}}}", safe(value))
       end
       document
     end
@@ -28,7 +29,10 @@ module XlsxTemplater
                    .get_input_stream
                    .read
       document.force_encoding(Encoding::UTF_8) if document.respond_to?(:force_encoding)
-      document.scan(/\$([A-Z_\d+]+)\$/).flatten
+      dollar_pattern = /\$([A-Z_\d+]+)\$/
+      mustache_pattern = /\{\{([A-Z_\d+]+)\}\}/
+      variable_pattern = Regexp.union(dollar_pattern, mustache_pattern)
+      document.scan(variable_pattern).flatten.compact
     end
 
     private
