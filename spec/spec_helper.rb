@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "ruby/xlsx/templater"
+require "xlsx_templater"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
