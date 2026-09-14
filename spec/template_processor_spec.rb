@@ -34,7 +34,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
   let (:parser) { described_class.new(data) }
 
   def xlsx_with(shared_strings_xml)
-    file = Tempfile.new(['fixture', '.xlsx'])
+    file = Tempfile.new(%w[fixture .xlsx])
     Zip::OutputStream.open(file.path) do |out|
       out.put_next_entry('xl/sharedStrings.xml')
       out.write(shared_strings_xml)
@@ -61,21 +61,21 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
 
   # ドル記号で囲まれたパラメータがスキャンされること
   it 'should scan dollar keys' do
-    fixture = xlsx_with(build_shared_strings_xml(['$PATIENT_ID$', '$PATIENT_NAME$']))
+    fixture = xlsx_with(build_shared_strings_xml(%w[$PATIENT_ID$ $PATIENT_NAME$]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
 
   # 二重波括弧で囲まれたパラメータがスキャンされること
   it 'should scan mustache keys' do
-    fixture = xlsx_with(build_shared_strings_xml(['{{PATIENT_ID}}', '{{PATIENT_NAME}}']))
+    fixture = xlsx_with(build_shared_strings_xml(%w[{{PATIENT_ID}} {{PATIENT_NAME}}]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
 
   # ドル記号と二重波括弧の両方で囲まれたパラメータがスキャンされること
   it 'should scan both dollar and mustache keys' do
-    fixture = xlsx_with(build_shared_strings_xml(['$PATIENT_ID$', '{{PATIENT_NAME}}']))
+    fixture = xlsx_with(build_shared_strings_xml(%w[$PATIENT_ID$ {{PATIENT_NAME}}]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
@@ -89,7 +89,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
 
   # ドル記号のキーが値に置き換わること
   it 'should replace dollar keys with values' do
-    xml = build_shared_strings_xml(['$PATIENT_ID$', '$PATIENT_NAME$'])
+    xml = build_shared_strings_xml(%w[$PATIENT_ID$ $PATIENT_NAME$])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
     expect(out).to include(data[:patient_name])
@@ -99,7 +99,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
 
   # 二重波括弧のキーが値に置き換わること
   it 'should replace mustache keys with values' do
-    xml = build_shared_strings_xml(['{{PATIENT_ID}}', '{{PATIENT_NAME}}'])
+    xml = build_shared_strings_xml(%w[{{PATIENT_ID}} {{PATIENT_NAME}}])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
     expect(out).to include(data[:patient_name])
@@ -109,7 +109,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
 
   # ドル記号と二重波括弧の両方のキーが値に置き換わること
   it 'should replace both dollar and mustache keys with values' do
-    xml = build_shared_strings_xml(['$PATIENT_ID$', '{{PATIENT_NAME}}'])
+    xml = build_shared_strings_xml(%w[$PATIENT_ID$ {{PATIENT_NAME}}])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
     expect(out).to include(data[:patient_name])
@@ -119,7 +119,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
 
   # 全キーが値に置き換わること
   it 'should replace all keys with values' do
-    xml = build_shared_strings_xml(data.keys.map { | key| dollar(key) })
+    xml = build_shared_strings_xml(data.keys.map { |key| dollar(key) })
     out = parser.render(xml)
     data.each do |key, value|
       expect(out).to include(value.to_s)
