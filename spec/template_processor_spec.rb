@@ -30,7 +30,7 @@ module XlsxTemplater
 end
 
 RSpec.describe XlsxTemplater::TemplateProcessor do
-  let (:data) { XlsxTemplater::TestData::DATA.transform_values(&:dup) }
+  let (:data) { XlsxTemplater::TestData::DATA.dup }
   let (:parser) { described_class.new(data) }
 
   def xlsx_with(shared_strings_xml)
