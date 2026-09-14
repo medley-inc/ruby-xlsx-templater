@@ -59,36 +59,31 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     "{{#{key.to_s.upcase}}}"
   end
 
-  # ドル記号で囲まれたパラメータがスキャンされること
-  it 'should scan dollar keys' do
+  it 'ドル記号で囲まれたパラメータがスキャンされること' do
     fixture = xlsx_with(build_shared_strings_xml(%w[$PATIENT_ID$ $PATIENT_NAME$]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
 
-  # 二重波括弧で囲まれたパラメータがスキャンされること
-  it 'should scan mustache keys' do
+  it '二重波括弧で囲まれたパラメータがスキャンされること' do
     fixture = xlsx_with(build_shared_strings_xml(%w[{{PATIENT_ID}} {{PATIENT_NAME}}]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
 
-  # ドル記号と二重波括弧の両方で囲まれたパラメータがスキャンされること
-  it 'should scan both dollar and mustache keys' do
+  it 'ドル記号と二重波括弧の両方で囲まれたパラメータがスキャンされること' do
     fixture = xlsx_with(build_shared_strings_xml(%w[$PATIENT_ID$ {{PATIENT_NAME}}]))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq(%w[PATIENT_ID PATIENT_NAME])
   end
 
-  # キーを含まない文字列しかないときに[]を返すか
-  it 'should return an empty array when no keys are present' do
+  it 'キーを含まない文字列しかないときに[]を返すか' do
     fixture = xlsx_with(build_shared_strings_xml(['no keys']))
     out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
     expect(out).to eq([])
   end
 
-  # ドル記号のキーが値に置き換わること
-  it 'should replace dollar keys with values' do
+  it 'ドル記号のキーが値に置き換わること' do
     xml = build_shared_strings_xml(%w[$PATIENT_ID$ $PATIENT_NAME$])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
@@ -97,8 +92,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     expect(out).not_to include('$PATIENT_NAME$')
   end
 
-  # 二重波括弧のキーが値に置き換わること
-  it 'should replace mustache keys with values' do
+  it '二重波括弧のキーが値に置き換わること' do
     xml = build_shared_strings_xml(%w[{{PATIENT_ID}} {{PATIENT_NAME}}])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
@@ -107,8 +101,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     expect(out).not_to include('{{PATIENT_NAME}}')
   end
 
-  # ドル記号と二重波括弧の両方のキーが値に置き換わること
-  it 'should replace both dollar and mustache keys with values' do
+  it 'ドル記号と二重波括弧の両方のキーが値に置き換わること' do
     xml = build_shared_strings_xml(%w[$PATIENT_ID$ {{PATIENT_NAME}}])
     out = parser.render(xml)
     expect(out).to include(data[:patient_id])
@@ -117,8 +110,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     expect(out).not_to include('{{PATIENT_NAME}}')
   end
 
-  # 全キーが値に置き換わること
-  it 'should replace all keys with values' do
+  it '全キーが値に置き換わること' do
     xml = build_shared_strings_xml(data.keys.map { |key| dollar(key) })
     out = parser.render(xml)
     data.each do |key, value|
@@ -127,8 +119,7 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     end
   end
 
-  # 値に半角の & が含まれても壊れた XML を出力しないこと
-  it 'should escape xml special characters in values' do
+  it '値に半角の & が含まれても壊れた XML を出力しないこと' do
     data[:clinic_name] = 'メディカル&ケアクリニック'
     xml = build_shared_strings_xml(['$CLINIC_NAME$'])
     out = parser.render(xml)
