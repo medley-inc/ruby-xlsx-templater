@@ -126,5 +126,13 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
       expect(out).not_to include(dollar(key))
     end
   end
+
+  # 値に半角の & が含まれても壊れた XML を出力しないこと
+  it 'should escape xml special characters in values' do
+    data[:clinic_name] = 'メディカル&ケアクリニック'
+    xml = build_shared_strings_xml([dollar(:clinic_name)])
+    out = parser.render(xml)
+    expect(out).to include('メディカル&amp;ケアクリニック')
+  end
 end
 
