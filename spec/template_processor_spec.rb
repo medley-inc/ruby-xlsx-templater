@@ -51,12 +51,8 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     EOF
   end
 
-  def dollar(key)
+  def dollar_placeholder(key)
     "$#{key.to_s.upcase}$"
-  end
-
-  def mustache(key)
-    "{{#{key.to_s.upcase}}}"
   end
 
   describe '.scan_params' do
@@ -120,11 +116,11 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
     end
 
     it '全キーが値に置き換わること' do
-      xml = build_shared_strings_xml(data.keys.map { |key| dollar(key) })
+      xml = build_shared_strings_xml(data.keys.map { |key| dollar_placeholder(key) })
       out = parser.render(xml)
       data.each do |key, value|
         expect(out).to include(value.to_s)
-        expect(out).not_to include(dollar(key))
+        expect(out).not_to include(dollar_placeholder(key))
       end
     end
 
