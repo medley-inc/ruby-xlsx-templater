@@ -83,6 +83,12 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
       out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
       expect(out).to eq([])
     end
+
+    it 'ドル記号でも二重波括弧でも囲まれていないパラメータはスキャンされないこと' do
+      fixture = xlsx_with(build_shared_strings_xml(%w[%PATIENT_ID% %PATIENT_NAME%]))
+      out = XlsxTemplater::TemplateProcessor.scan_params(fixture.path)
+      expect(out).to eq([])
+    end
   end
 
   describe '#render' do
@@ -129,6 +135,12 @@ RSpec.describe XlsxTemplater::TemplateProcessor do
       expect(out).to include('メディカル&amp;ケアクリニック')
     end
 
+    it 'ドル記号でも二重波括弧でも囲まれていないパラメータは値に置き換わらないこと' do
+      xml = build_shared_strings_xml(%w[%PATIENT_ID% %PATIENT_NAME%])
+      out = parser.render(xml)
+      expect(out).to include('%PATIENT_ID%')
+      expect(out).to include('%PATIENT_NAME%')
+    end
   end
 end
 
