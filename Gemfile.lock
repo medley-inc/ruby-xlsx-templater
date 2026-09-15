@@ -2,16 +2,12 @@ PATH
   remote: .
   specs:
     xlsx_templater (0.0.1)
-      nokogiri
       rubyzip (>= 1.1.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.3)
-    mini_portile2 (2.4.0)
-    nokogiri (1.10.10)
-      mini_portile2 (~> 2.4.0)
     rake (12.3.3)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -37,4 +33,4 @@ DEPENDENCIES
   xlsx_templater!
 
 BUNDLED WITH
-   2.1.4
+  4.0.18
